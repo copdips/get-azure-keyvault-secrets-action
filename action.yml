@@ -1,0 +1,28 @@
+name: "Azure KeyVault - Get Secrets Fast"
+description: "Get secrets from Azure Key Vault fast then set as environment variables and json output."
+inputs:
+  keyvault:
+    description: "Name of the Azure KeyVault"
+    required: true
+outputs:
+  json:
+    description: "all environment variables created from secrets in json string."
+branding:
+  icon: "lock"
+  color: "red"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get keyvault secrets
+      id: get-keyvault-secrets
+      shell: bash
+      run: |
+        access_token=$(az account get-access-token --resource "https://vault.azure.net"  | jq .accessToken -r)
+        secrets=$(az keyvault secret list --vault-name $KEYVAULT | jq 'map(.name) | join(",")' -r)
+        python $GITHUB_ACTION_PATH/get_azure_keyvault_secrets.py \
+          --keyvault $KEYVAULT \
+          --secrets $secrets \
+          --access-token $access_token
+      env:
+        KEYVAULT: ${{ inputs.keyvault }}
