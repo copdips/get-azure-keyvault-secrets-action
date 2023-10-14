@@ -45,8 +45,11 @@ def write_results_to_env_vars(result_dict: dict):
             f.write(f"{k}={v}\n")
             print(f"::add-mask::{v}")
             print(f"Created new env var: {k}")
+    print(f"GITHUB_OUTPUT: {os.environ['GITHUB_OUTPUT']}")
     with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
         f.write(f"{GITHUB_OUTPUT_JSON_VAR_NAME}={json.dumps(result_dict)}\n")
+    with open(os.environ["GITHUB_OUTPUT"], encoding="utf-8") as f:
+        print(f.read())
 
 
 async def main():

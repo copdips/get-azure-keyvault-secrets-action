@@ -24,6 +24,7 @@ User must be authenticated to Azure before using this action, please refer to [A
     creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
 
 - name: Get Azure KeyVault secrets
+  id: get-azure-keyvault-secrets
   uses: copdips/get-azure-keyvault-secrets-action@v1
   with:
     keyvault: {your_azure_keyvault_name}
@@ -40,11 +41,8 @@ User must be authenticated to Azure before using this action, please refer to [A
   run: |
     echo $JSON_SECRETS | jq .CLIENT_SECRET -r
   env:
-    JSON_SECRETS: ${{ steps.get-keyvault-secrets.outputs.json }}
+    JSON_SECRETS: ${{ steps.get-azure-keyvault-secrets.outputs.json }}
 ```
-
-> **Note**
-> Check [here](https://copdips.com/2023/09/github-actions-variables.html#json-variables-with-github_output) to see how to use json output.
 
 This action retrieves all secrets from the keyvault identified by the input `keyvault` and sets them as **environment variables**, allowing users to access them directly within the same workflow job. The environment variable is named using the upper snake case of the secret name. For example, a keyvault secret named `client-secret` will result in an environment variable named `CLIENT_SECRET`. The value of this environment variable remains identical to the original secret value.
 
